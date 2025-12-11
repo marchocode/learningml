@@ -161,7 +161,7 @@ def gradient_function_multi(w, b, x_train, y_train):
     dj_dw = dj_dw / m
     dj_db = dj_db / m
 
-    return dj_db, dj_dw
+    return dj_dw,dj_db
 
 
 def gradient_descent_multi(w_init, b_init, x_train, y_train, alpha, num_iterations):
@@ -187,7 +187,8 @@ def gradient_descent_multi(w_init, b_init, x_train, y_train, alpha, num_iteratio
         b = b - alpha * dj_db
 
         if i < 100000:  # prevent resource exhaustion
-            cost_history.append(compute_cost_multi(w, b, x_train, y_train))
+            cost = compute_cost_multi(w, b, x_train, y_train)
+            cost_history.append(cost)
 
         if i % math.ceil(num_iterations / 10) == 0:
             print(f"Iteration {i:4d}: Cost {cost_history[-1]:8.2f}")
