@@ -1,4 +1,6 @@
 import numpy as np
+import copy
+import math
 import matplotlib.pyplot as plt
 
 
@@ -47,6 +49,27 @@ def compute_cost(w, b, x_train, y_train):
         predict_y[i] = line_regression(w, x_train[i], b)
 
     return cost_function(predict_y, y_train)
+
+
+def compute_cost_multi(w, b, X_train, y_train):
+    """
+    计算多特性输入下的损失函数
+    :param w:
+    :param b:
+    :param X_train:
+    :param y_train:
+    :return:
+    """
+
+    m = X_train.shape[0]
+    cost = 0.0
+
+    for i in range(m):
+        f_wb_i = np.dot(X_train[i], w) + b
+        cost = cost + (y_train[i] - f_wb_i) ** 2
+
+    cost = cost / (2 * m)
+    return cost
 
 
 def draw_regression(w, b, x_train, y_train):
@@ -111,3 +134,62 @@ def gradient_function(w, b, x_train, y_train):
     dj_b = dj_b / m
 
     return dj_w, dj_b
+
+
+def gradient_function_multi(w, b, x_train, y_train):
+    """
+    梯度下降，支持多个参数
+    :param w:
+    :param b:
+    :param x_train:
+    :param y_train:
+    :return:
+    """
+    m, n = x_train.shape
+
+    dj_dw = np.zeros(n)
+    dj_db = 0.
+
+    for i in range(m):
+        err = (np.dot(x_train[i], w) + b) - y_train[i]
+
+        for j in range(n):
+            dj_dw[j] = dj_dw[j] + err * x_train[i, j]
+
+        dj_db = dj_db + err
+
+    dj_dw = dj_dw / m
+    dj_db = dj_db / m
+
+    return dj_db, dj_dw
+
+
+def gradient_descent_multi(w_init, b_init, x_train, y_train, alpha, num_iterations):
+    """
+    运行梯度下降,获得最佳w和b
+    :param w_init:
+    :param b_init:
+    :param x_train:
+    :param y_train:
+    :param alpha:
+    :param num_iterations:
+    :return:
+    """
+    w = copy.deepcopy(w_init)
+    b = copy.deepcopy(b_init)
+    cost_history = []
+
+    for i in range(num_iterations):
+
+        dj_dw, dj_db = gradient_function_multi(w, b, x_train, y_train)
+
+        w = w - alpha * dj_dw
+        b = b - alpha * dj_db
+
+        if i < 100000:  # prevent resource exhaustion
+            cost_history.append(compute_cost_multi(w, b, x_train, y_train))
+
+        if i % math.ceil(num_iterations / 10) == 0:
+            print(f"Iteration {i:4d}: Cost {cost_history[-1]:8.2f}")
+
+    return w, b
