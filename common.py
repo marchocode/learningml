@@ -188,9 +188,55 @@ def gradient_descent_multi(w_init, b_init, x_train, y_train, alpha, num_iteratio
 
         if i < 100000:  # prevent resource exhaustion
             cost = compute_cost_multi(w, b, x_train, y_train)
-            cost_history.append(cost)
+            cost_history.append([cost,w,b,dj_dw,dj_db])
 
         if i % math.ceil(num_iterations / 10) == 0:
-            print(f"Iteration {i:4d}: Cost {cost_history[-1]:8.2f}")
+            print(f"Iteration {i:4d}: Cost {cost_history[-1][0]:8.2f}")
 
-    return w, b
+    return w, b, cost_history
+
+
+def load_house_data():
+    """
+    获得测试训练数据
+    """
+    data = np.loadtxt("house.txt", delimiter=",", skiprows=1)
+    X = data[:,:4]
+    y = data[:,4]
+
+    return X, y
+
+
+def run_gradient_descent(X_train, y_train, alpha, iterations):
+    """
+    从零开始运行梯度下降
+    """
+    m, n = X_train.shape
+    init_w = np.zeros(n)
+    init_b = 0.
+
+    w, b, cost_history = gradient_descent_multi(init_w, init_b, X_train, y_train, alpha, iterations)
+    print(f"b,w found by gradient descent: {b:0.2f},{w} ")
+
+    return w,b,cost_history
+
+
+def draw_cost_with_iteration(cost_history):
+
+    fig, (ax1,ax2) = plt.subplots(1, 2, figsize=(12, 4), sharey=True)
+    ws = [item[1][0] for item in cost_history]
+
+    ax1.plot(np.arange(len(cost_history)), [item[0] for item in cost_history]);ax1.set_xlabel("history");ax1.set_ylabel("cost")
+    ax2.plot(ws, [item[0] for item in cost_history]);ax2.set_xlabel("w[0]");ax2.set_ylabel("cost")
+
+    plt.show()
+
+def zscore_normalize(X):
+    """
+    特征缩放
+    """
+    mu = np.mean(X, axis=0)
+    sigma = np.std(X, axis=0)
+    X_norm = (X - mu) / sigma
+
+    return X_norm, mu, sigma
