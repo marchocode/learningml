@@ -316,3 +316,35 @@ def plt_roast(X,Y):
     ax.set_ylabel("Duration \n(minutes)",size=12)
     ax.legend(loc='upper right')
     plt.show()
+
+
+def plot_learning_curves(history):
+    # 提取数据
+    acc = history.history['accuracy']
+    val_acc = history.history['val_accuracy']
+    loss = history.history['loss']
+    val_loss = history.history['val_loss']
+
+    epochs = range(1, len(acc) + 1)
+
+    # --- 画损失 (Loss) 曲线 ---
+    plt.figure(figsize=(12, 5))
+
+    plt.subplot(1, 2, 1)
+    plt.plot(epochs, loss, 'bo-', label='Training Loss')  # 蓝点线
+    plt.plot(epochs, val_loss, 'r*-', label='Validation Loss')  # 红星线
+    plt.title('Training and Validation Loss')
+    plt.xlabel('Epochs')
+    plt.ylabel('Loss')
+    plt.legend()
+
+    # --- 画准确率 (Accuracy) 曲线 ---
+    plt.subplot(1, 2, 2)
+    plt.plot(epochs, acc, 'bo-', label='Training Acc')
+    plt.plot(epochs, val_acc, 'r*-', label='Validation Acc')
+    plt.title('Training and Validation Accuracy')
+    plt.xlabel('Epochs')
+    plt.ylabel('Accuracy')
+    plt.legend()
+
+    plt.show()
